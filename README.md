@@ -5,7 +5,7 @@ We want to allow users to get mp3 versions of their youtube video. The user just
 in their youtube link and Selenium will do the work.
 
 ### Goals:
-1. To clutter or false downloads
+1. To make sure that the Users get the correct mp3 for their selected songs
 1. Improve overall layout. For instance we dont want it staying on a console but rather a gui.
 1. No pop ups. We want a robust program that waits for the download 
 
