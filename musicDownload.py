@@ -17,7 +17,6 @@ default_download_path = f'{os.getcwd()}\\music_downloaded\\'
 geckodriver_path = os.environ.get('GECKODRIVER')
 yt_converter_url = 'https://ytmp3.cc/en13/'
 yt_converter_download_button = '/html/body/div[2]/div[1]/div[1]/div[3]/a[1]'
-testing_youtube_url = 'https://www.youtube.com/watch?v=BL1aQsEobOs&ab_channel=Shepuz'
 
 # Creating the default download root
 if not os.path.exists(default_download_path):
@@ -32,8 +31,20 @@ fp.set_preference('browser.download.folderList', 2)
 fp.set_preference('browser.helperApps.neverAsk.saveToDisk', '.mp3 audio/mpeg')
 
 # We are going to request a url from users and use that url to download using a youtube to mp3 converter
-# yt_url = input("Please enter a youtube url of your music: ")
-yt_url = testing_youtube_url
+multi_yt_url = []
+print('''
+Please enter a youtube link below to convert that youtube video to an mp3 form.
+Note: Press "q" to stop adding links.
+''')
+CURRENT_LINK_NUMBER = 1
+while True:
+    yt_url = input(f'Link {CURRENT_LINK_NUMBER}: ')
+    if yt_url[0].lower() == 'q':
+        break
+    multi_yt_url.append(yt_url)
+    CURRENT_LINK_NUMBER += 1
+
+print(multi_yt_url)
 web = webdriver.Firefox(executable_path=geckodriver_path, firefox_profile=fp)
 web.get(yt_converter_url)
 
@@ -69,6 +80,7 @@ while True:
     download_status = download_not_finished(default_download_path)
     if not download_status:
         print('Download Finished')
+        sleep(5)
         web.quit()
         break
     else:
