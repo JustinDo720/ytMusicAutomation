@@ -17,6 +17,10 @@ default_download_path = f'{os.getcwd()}\\music_downloaded\\'
 geckodriver_path = os.environ.get('GECKODRIVER')
 yt_converter_url = 'https://ytmp3.cc/en13/'
 yt_converter_download_button = '/html/body/div[2]/div[1]/div[1]/div[3]/a[1]'
+yt_convert_next_button = '/html/body/div[2]/div[1]/div[1]/div[3]/a[3]'
+testing_youtube_url1 = 'https://www.youtube.com/watch?v=gD7lUu-SRwY&ab_channel=MixHound'
+testing_youtube_url2 = 'https://www.youtube.com/watch?v=YXQUFcsSI7Y'
+testing_youtube_url3 = 'https://www.youtube.com/watch?v=32faUlvDxCw&list=PLna2m8Qg4Uj54H6-vz6Vbwv2FgRwio71p&index=1'
 
 # Creating the default download root
 if not os.path.exists(default_download_path):
@@ -31,41 +35,37 @@ fp.set_preference('browser.download.folderList', 2)
 fp.set_preference('browser.helperApps.neverAsk.saveToDisk', '.mp3 audio/mpeg')
 
 # We are going to request a url from users and use that url to download using a youtube to mp3 converter
-multi_yt_url = []
-print('''
-Please enter a youtube link below to convert that youtube video to an mp3 form.
-Note: Press "q" to stop adding links.
-''')
-CURRENT_LINK_NUMBER = 1
-while True:
-    yt_url = input(f'Link {CURRENT_LINK_NUMBER}: ')
-    if yt_url[0].lower() == 'q':
-        break
-    multi_yt_url.append(yt_url)
-    CURRENT_LINK_NUMBER += 1
+multi_yt_url = [testing_youtube_url1, testing_youtube_url2]
+# CURRENT_LINK_NUMBER = 1
+#
+# print('''
+# Please enter a youtube link below to convert that youtube video to an mp3 form.
+# Note: Press "q" to stop adding links.
+# ''')
+#
+# while True:
+#     yt_url = input(f'Link {CURRENT_LINK_NUMBER}: ')
+#     if yt_url[0].lower() == 'q':
+#         break
+#     multi_yt_url.append(yt_url)
+#     CURRENT_LINK_NUMBER += 1
 
-print(multi_yt_url)
+initial_url = multi_yt_url[0]
+last_url = multi_yt_url[-1]
 web = webdriver.Firefox(executable_path=geckodriver_path, firefox_profile=fp)
 web.get(yt_converter_url)
 
-# Start putting the url and downloading the mp3 version of the yt link
-try:
-    web.find_element_by_id('input').send_keys(yt_url)
-    web.find_element_by_id('submit').click()
-except Exception:
-    print("Sorry there was an error with your download. Please send a new link of the same song.")
 
-# This is where we want to wait for the download button
-try:
-    WebDriverWait(web, 60).until(EC.visibility_of_all_elements_located(('tag name', 'a')))
-    web.find_element_by_xpath(yt_converter_download_button).click()
-except Exception:
-    print('We apologize but your download exceeded 1 minute... We will wait for another 40 seconds')
-    WebDriverWait(web, 40).until(EC.visibility_of_all_elements_located(('tag name', 'a')))
-    web.find_element_by_xpath(yt_converter_download_button).click()
+# We want to have a function that could wait for the download.
+
+def check_existence_of_xpath(xpath):
+    try:
+        web.find_element_by_xpath(xpath).click()
+    except Exception:
+        return False
+    return True
 
 
-# We wait to wait for the download
 def download_not_finished(download_folder):
     part_file = [file for file in os.listdir(download_folder) if file.endswith('.part')]
     if part_file:
@@ -76,13 +76,47 @@ def download_not_finished(download_folder):
         return False
 
 
-while True:
-    download_status = download_not_finished(default_download_path)
-    if not download_status:
-        print('Download Finished')
-        sleep(5)
-        web.quit()
-        break
-    else:
-        print('Tick')
-        sleep(10)
+def wait_for_download(download_directory):
+    while True:
+        download_in_progress = download_not_finished(download_directory)
+        if not download_in_progress:
+            print('Download Finished')
+            sleep(5)
+            web.quit()
+            break
+        else:
+            print('Tick')
+            sleep(10)
+
+
+def convert_and_download(url_to_download, mode):
+    try:
+        web.find_element_by_id('input').send_keys(url_to_download)
+        web.find_element_by_id('submit').click()
+    except Exception:
+        print("Sorry there was an error with your download. Please send a new link of the same song.")
+
+    # This is where we want to wait for the download button
+    try:
+        WebDriverWait(web, 60).until(EC.visibility_of_all_elements_located(('tag name', 'a')))
+        web.find_element_by_xpath(yt_converter_download_button).click()
+    except Exception:
+        print('We apologize but your conversion exceeded 1 minute... We will wait for another 40 seconds')
+        WebDriverWait(web, 40).until(EC.visibility_of_all_elements_located(('tag name', 'a')))
+        web.find_element_by_xpath(yt_converter_download_button).click()
+
+
+# Start putting the url and downloading the mp3 version of the yt link
+for url in multi_yt_url:
+    if url == initial_url and url != last_url:
+        # Url is the initial but not final
+        print('Initial but not final')
+    elif url != initial_url and url != last_url:
+        # This is part of the middle url
+        print('Middle')
+    elif url 
+
+
+
+
+
