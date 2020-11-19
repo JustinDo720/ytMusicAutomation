@@ -35,7 +35,7 @@ fp.set_preference('browser.download.folderList', 2)
 fp.set_preference('browser.helperApps.neverAsk.saveToDisk', '.mp3 audio/mpeg')
 
 # We are going to request a url from users and use that url to download using a youtube to mp3 converter
-multi_yt_url = [testing_youtube_url1, testing_youtube_url2]
+multi_yt_url = [testing_youtube_url1, testing_youtube_url2, testing_youtube_url3]
 # CURRENT_LINK_NUMBER = 1
 #
 # print('''
@@ -91,6 +91,7 @@ def wait_for_download(download_directory):
 
 def convert_and_download(url_to_download, mode):
     try:
+        # We want these things to be normal regardless of mode.
         web.find_element_by_id('input').send_keys(url_to_download)
         web.find_element_by_id('submit').click()
     except Exception:
@@ -100,6 +101,9 @@ def convert_and_download(url_to_download, mode):
     try:
         WebDriverWait(web, 60).until(EC.visibility_of_all_elements_located(('tag name', 'a')))
         web.find_element_by_xpath(yt_converter_download_button).click()
+        # But if theres an initial and that initial != the final then theres a next button that we need to click
+        if mode == 'initial' or mode == 'middle':
+            web.find_element_by_xpath(yt_convert_next_button).click()
     except Exception:
         print('We apologize but your conversion exceeded 1 minute... We will wait for another 40 seconds')
         WebDriverWait(web, 40).until(EC.visibility_of_all_elements_located(('tag name', 'a')))
@@ -109,12 +113,19 @@ def convert_and_download(url_to_download, mode):
 # Start putting the url and downloading the mp3 version of the yt link
 for url in multi_yt_url:
     if url == initial_url and url != last_url:
-        # Url is the initial but not final
-        print('Initial but not final')
+        # Url is the initial but not final which means there are some middle urls
+        print('Initial')
+        # We don't want to end off here because there are some middle urls
+        convert_and_download(url, mode='initial')
     elif url != initial_url and url != last_url:
         # This is part of the middle url
         print('Middle')
-    elif url 
+        convert_and_download(url, mode='middle')
+    else:
+        # Url is the last one but could also be the first if the list only contains one url
+        print('I am last but could also be the first if the list is one url')
+        convert_and_download(url, mode='first_and_last')
+        wait_for_download(default_download_path)
 
 
 
