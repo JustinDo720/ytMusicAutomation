@@ -102,7 +102,7 @@ def convert_and_download(url_to_download, mode):
         WebDriverWait(web, 60).until(EC.visibility_of_all_elements_located(('tag name', 'a')))
         web.find_element_by_xpath(yt_converter_download_button).click()
         # But if theres an initial and that initial != the final then theres a next button that we need to click
-        if mode == 'initial':
+        if mode == 'initial' or mode == 'middle':
             web.find_element_by_xpath(yt_convert_next_button).click()
     except Exception:
         print('We apologize but your conversion exceeded 1 minute... We will wait for another 40 seconds')
