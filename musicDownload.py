@@ -7,20 +7,21 @@ from selenium.webdriver.support import expected_conditions as EC
 import os
 from time import sleep
 
-'''
+"""
 Path Section:
     geckodriver_path: Path to an executable geckodriver to launch up firefox
     yt_converter_url: Url used to paste youtube links that will convert to mp3 format
-    -- testing_youtube_url: Url that will be used to test (Remove later) --
-'''
+    default_download_path: A directory where users will see their downloaded mp3 files. Auto created if not present.
+
+X Path buttons:
+    yt_converter_download_button: download button on the website
+    yt_convert_next_button: The convert another button that allows us to enter another url 
+"""
 default_download_path = f'{os.getcwd()}\\music_downloaded\\'
 geckodriver_path = os.environ.get('GECKODRIVER')
 yt_converter_url = 'https://ytmp3.cc/en13/'
 yt_converter_download_button = '/html/body/div[2]/div[1]/div[1]/div[3]/a[1]'
 yt_convert_next_button = '/html/body/div[2]/div[1]/div[1]/div[3]/a[3]'
-testing_youtube_url1 = 'https://www.youtube.com/watch?v=gD7lUu-SRwY&ab_channel=MixHound'
-testing_youtube_url2 = 'https://www.youtube.com/watch?v=YXQUFcsSI7Y'
-testing_youtube_url3 = 'https://www.youtube.com/watch?v=32faUlvDxCw&list=PLna2m8Qg4Uj54H6-vz6Vbwv2FgRwio71p&index=1'
 
 # Creating the default download root
 if not os.path.exists(default_download_path):
@@ -35,20 +36,21 @@ fp.set_preference('browser.download.folderList', 2)
 fp.set_preference('browser.helperApps.neverAsk.saveToDisk', '.mp3 audio/mpeg')
 
 # We are going to request a url from users and use that url to download using a youtube to mp3 converter
-multi_yt_url = [testing_youtube_url1, testing_youtube_url2, testing_youtube_url3]
-# CURRENT_LINK_NUMBER = 1
-#
-# print('''
-# Please enter a youtube link below to convert that youtube video to an mp3 form.
-# Note: Press "q" to stop adding links.
-# ''')
-#
-# while True:
-#     yt_url = input(f'Link {CURRENT_LINK_NUMBER}: ')
-#     if yt_url[0].lower() == 'q':
-#         break
-#     multi_yt_url.append(yt_url)
-#     CURRENT_LINK_NUMBER += 1
+
+multi_yt_url = []
+CURRENT_LINK_NUMBER = 1
+
+print('''
+Please enter a youtube link below to convert that youtube video to an mp3 form.
+Note: Press "q" to stop adding links.''')
+
+
+while True:
+    yt_url = input(f'Link {CURRENT_LINK_NUMBER}: ')
+    if yt_url[0].lower() == 'q':
+        break
+    multi_yt_url.append(yt_url)
+    CURRENT_LINK_NUMBER += 1
 
 initial_url = multi_yt_url[0]
 last_url = multi_yt_url[-1]
@@ -114,16 +116,13 @@ def convert_and_download(url_to_download, mode):
 for url in multi_yt_url:
     if url == initial_url and url != last_url:
         # Url is the initial but not final which means there are some middle urls
-        print('Initial')
         # We don't want to end off here because there are some middle urls
         convert_and_download(url, mode='initial')
     elif url != initial_url and url != last_url:
         # This is part of the middle url
-        print('Middle')
         convert_and_download(url, mode='middle')
     else:
         # Url is the last one but could also be the first if the list only contains one url
-        print('I am last but could also be the first if the list is one url')
         convert_and_download(url, mode='first_and_last')
         wait_for_download(default_download_path)
 
