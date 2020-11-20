@@ -46,7 +46,7 @@ Note: Press "q" to stop adding links.''')
 
 
 while True:
-    yt_url = input(f'Link {CURRENT_LINK_NUMBER}: ')
+    yt_url = input(f'Link {CURRENT_LINK_NUMBER}: ').strip()
     if yt_url[0].lower() == 'q':
         break
     multi_yt_url.append(yt_url)
