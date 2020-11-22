@@ -30,11 +30,10 @@ if not os.path.exists(default_download_path):
 # FireFox Preferences for Selenium
 fp = webdriver.FirefoxProfile()
 fp.set_preference('browser.download.dir', default_download_path)
-fp.set_preference('browser.download.manager.showWhenStarting', False)
 fp.set_preference('browser.download.folderList', 2)
 # This preference ignores the download tab that asks what to do with mp3 files
 fp.set_preference('browser.helperApps.neverAsk.saveToDisk', '.mp3 audio/mpeg')
-
+#fp.set_preference('browser.download.manager.showWhenStarting', False)
 # We are going to request a url from users and use that url to download using a youtube to mp3 converter
 
 multi_yt_url = []
@@ -107,8 +106,8 @@ def convert_and_download(url_to_download, mode):
         if mode == 'initial' or mode == 'middle':
             web.find_element_by_xpath(yt_convert_next_button).click()
     except Exception:
-        print('We apologize but your conversion exceeded 1 minute... We will wait for another 40 seconds')
-        WebDriverWait(web, 40).until(EC.visibility_of_all_elements_located(('tag name', 'a')))
+        print('We apologize but your conversion exceeded 1 minute... We will wait for another 1 minute and 30 seconds')
+        WebDriverWait(web, 90).until(EC.visibility_of_all_elements_located(('tag name', 'a')))
         web.find_element_by_xpath(yt_converter_download_button).click()
 
 
@@ -117,12 +116,15 @@ for url in multi_yt_url:
     if url == initial_url and url != last_url:
         # Url is the initial but not final which means there are some middle urls
         # We don't want to end off here because there are some middle urls
+        print(url, 'Init')
         convert_and_download(url, mode='initial')
     elif url != initial_url and url != last_url:
         # This is part of the middle url
+        print(url,'middle')
         convert_and_download(url, mode='middle')
     else:
         # Url is the last one but could also be the first if the list only contains one url
+        print(url, 'first or last')
         convert_and_download(url, mode='first_and_last')
         wait_for_download(default_download_path)
 
