@@ -26,17 +26,6 @@ yt_converter_download_button = '/html/body/div[2]/div[1]/div[1]/div[3]/a[1]'
 yt_convert_next_button = '/html/body/div[2]/div[1]/div[1]/div[3]/a[3]'
 yt_error_here_button = '/html/body/div[2]/div[1]/p[2]/a[1]'
 
-# Testing url
-t1='https://www.youtube.com/watch?v=OVMuwa-HRCQ&ab_channel=Monstercat%3AUncaged'
-t2='https://www.youtube.com/watch?v=gD7lUu-SRwY'
-t3='https://www.youtube.com/watch?v=NlZH-HvPzS4'
-t4='https://www.youtube.com/watch?v=BrCKvKXvN2c'
-t5='https://www.youtube.com/watch?v=xNVZ4fzkSu8'
-t6='https://www.youtube.com/watch?v=1dcXmkco5ko'
-t7='https://www.youtube.com/watch?v=dX3k_QDnzHE'
-t8='https://www.youtube.com/watch?v=7t8lRdpv5IQ'
-
-
 # Creating the default download root
 if not os.path.exists(default_download_path):
     os.mkdir(default_download_path)
@@ -45,25 +34,25 @@ if not os.path.exists(default_download_path):
 fp = webdriver.FirefoxProfile()
 fp.set_preference('browser.download.dir', default_download_path)
 fp.set_preference('browser.download.folderList', 2)
+fp.set_preference('browser.download.manager.showWhenStarting', False)
 # This preference ignores the download tab that asks what to do with mp3 files
 fp.set_preference('browser.helperApps.neverAsk.saveToDisk', '.mp3 audio/mpeg')
-#fp.set_preference('browser.download.manager.showWhenStarting', False)
 # We are going to request a url from users and use that url to download using a youtube to mp3 converter
 
-multi_yt_url = [t1,t2,t3,t4,t5,t6,t7,t8]
+multi_yt_url = []
 CURRENT_LINK_NUMBER = 1
 
-# print('''
-# Please enter a youtube link below to convert that youtube video to an mp3 form.
-# Note: Press "q" to stop adding links.''')
-#
-#
-# while True:
-#     yt_url = input(f'Link {CURRENT_LINK_NUMBER}: ').strip()
-#     if yt_url[0].lower() == 'q':
-#         break
-#     multi_yt_url.append(yt_url)
-#     CURRENT_LINK_NUMBER += 1
+print('''
+Please enter a youtube link below to convert that youtube video to an mp3 form.
+Note: Press "q" to stop adding links.''')
+
+
+while True:
+    yt_url = input(f'Link {CURRENT_LINK_NUMBER}: ').strip()
+    if yt_url[0].lower() == 'q':
+        break
+    multi_yt_url.append(yt_url)
+    CURRENT_LINK_NUMBER += 1
 
 initial_url = multi_yt_url[0]
 last_url = multi_yt_url[-1]
@@ -169,15 +158,12 @@ for url in multi_yt_url:
     if url == initial_url and url != last_url:
         # Url is the initial but not final which means there are some middle urls
         # We don't want to end off here because there are some middle urls
-        print(url, 'Init')
         convert_and_download(url, mode='initial')
     elif url != initial_url and url != last_url:
         # This is part of the middle url
-        print(url, 'middle')
         convert_and_download(url, mode='middle')
     else:
         # Url is the last one but could also be the first if the list only contains one url
-        print(url, 'first or last')
         convert_and_download(url, mode='first_and_last')
         wait_for_download(default_download_path)
 
