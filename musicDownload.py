@@ -111,6 +111,10 @@ def swap_window_close(yt_download_window):
     try:
         window_after = web.window_handles[1]
         web.switch_to.window(window_after)
+        try:
+            web.switch_to.alert.accept()
+        except Exception:
+            print('There is no accept button')
         # If this works then we have pop up window
         web.close()
         web.switch_to.window(yt_download_window)
