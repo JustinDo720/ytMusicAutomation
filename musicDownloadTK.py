@@ -1,15 +1,29 @@
 from tkinter import *
+from bs4 import *
+import html5lib
+import requests
 
 
 # all of our functions that we are going to use with tkinter
 def display_url(event):
-    if url_entry.get() != '':
-        all_urls.insert(END, url_entry.get())
+    yt_link = url_entry.get()
+    # We are going to scrape for the name but we are going to use the url_entry as the link
+    if yt_link != '':
+        src = requests.get(yt_link).text
+        soup = BeautifulSoup(src, 'html5lib')
+        title = soup.find('title')
+        trim_title = title.text.replace('- YouTube', "").rstrip()
+        all_urls.insert(END, trim_title)
         url.set("")
 
 
 def delete_url(event):
     all_urls.delete(ANCHOR)
+
+
+def download():
+    print('Ready')
+
 
 # We set up a root
 root = Tk()
@@ -50,10 +64,14 @@ url_entry.bind('<Return>', display_url)
 
 # Display all the urls
 all_urls = Listbox(root, background=COLOR, width=100, bd=0)
-all_urls.grid(row=7, column=1)
+all_urls.grid(row=3, column=1)
 all_urls.grid_propagate(0)
 all_urls.config(highlightthickness=0)
 all_urls.bind('<Double-Button>', delete_url)
+
+# Download Section
+download_button = Button(root, text='Ready', bg=COLOR, command=download)
+download_button.grid(row=4, column=1)
 
 # This makes sure that the window does not close
 root.mainloop()
