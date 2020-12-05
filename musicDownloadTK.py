@@ -2,6 +2,9 @@ from tkinter import *
 from bs4 import *
 import html5lib
 import requests
+from musicDownload import download_music
+
+all_yt_urls = []
 
 
 # all of our functions that we are going to use with tkinter
@@ -13,16 +16,23 @@ def display_url(event):
         soup = BeautifulSoup(src, 'html5lib')
         title = soup.find('title')
         trim_title = title.text.replace('- YouTube', "").rstrip()
+        all_yt_urls.append({'url': yt_link, 'yt_name': trim_title})
         all_urls.insert(END, trim_title)
         url.set("")
 
 
 def delete_url(event):
+    url_to_delete = all_urls.get(ANCHOR)
     all_urls.delete(ANCHOR)
+    for urls in all_yt_urls:
+        if urls['yt_name'] == url_to_delete:
+            all_yt_urls.remove(urls)
 
 
 def download():
-    print('Ready')
+    print('Ready', all_yt_urls)
+    download_music(all_yt_urls)
+
 
 
 # We set up a root
