@@ -26,45 +26,28 @@ yt_converter_download_button = '/html/body/div[2]/div[1]/div[1]/div[3]/a[1]'
 yt_convert_next_button = '/html/body/div[2]/div[1]/div[1]/div[3]/a[3]'
 yt_error_here_button = '/html/body/div[2]/div[1]/p[2]/a[1]'
 
-# Creating the default download root
-if not os.path.exists(default_download_path):
-    os.mkdir(default_download_path)
 
-# FireFox Preferences for Selenium
-fp = webdriver.FirefoxProfile()
-fp.set_preference('browser.download.dir', default_download_path)
-fp.set_preference('browser.download.folderList', 2)
-fp.set_preference('browser.download.manager.showWhenStarting', False)
-# This preference ignores the download tab that asks what to do with mp3 files
-fp.set_preference('browser.helperApps.neverAsk.saveToDisk', '.mp3 audio/mpeg')
-# We are going to request a url from users and use that url to download using a youtube to mp3 converter
+def set_up():
+    # Creating the default download root
+    if not os.path.exists(default_download_path):
+        os.mkdir(default_download_path)
 
-multi_yt_url = []
-CURRENT_LINK_NUMBER = 1
+    # FireFox Preferences for Selenium
+    fp = webdriver.FirefoxProfile()
+    fp.set_preference('browser.download.dir', default_download_path)
+    fp.set_preference('browser.download.folderList', 2)
+    fp.set_preference('browser.download.manager.showWhenStarting', False)
+    # This preference ignores the download tab that asks what to do with mp3 files
+    fp.set_preference('browser.helperApps.neverAsk.saveToDisk', '.mp3 audio/mpeg')
+    # We are going to request a url from users and use that url to download using a youtube to mp3 converter
 
-print('''
-Please enter a youtube link below to convert that youtube video to an mp3 form.
-Note: Press "q" to stop adding links.''')
+    web = webdriver.Firefox(executable_path=geckodriver_path, firefox_profile=fp)
+    web.get(yt_converter_url)
+    return web
 
-
-while True:
-    yt_url = input(f'Link {CURRENT_LINK_NUMBER}: ').strip()
-    if yt_url[0].lower() == 'q':
-        break
-    multi_yt_url.append(yt_url)
-    CURRENT_LINK_NUMBER += 1
-
-initial_url = multi_yt_url[0]
-last_url = multi_yt_url[-1]
-web = webdriver.Firefox(executable_path=geckodriver_path, firefox_profile=fp)
-web.get(yt_converter_url)
-current_window = web.current_window_handle  # This is the same as web.window_handles[0] which is the initial web
-print(web.window_handles[0], current_window)
 
 # We want to have a function that could wait for the download.
-
-
-def check_existence_of_xpath(xpath):
+def check_existence_of_xpath(xpath, web):
     try:
         web.find_element_by_xpath(xpath).click()
     except Exception:
@@ -82,7 +65,7 @@ def download_not_finished(download_folder):
         return False
 
 
-def wait_for_download(download_directory):
+def wait_for_download(download_directory, web):
     while True:
         download_in_progress = download_not_finished(download_directory)
         if not download_in_progress:
@@ -95,7 +78,7 @@ def wait_for_download(download_directory):
             sleep(10)
 
 
-def swap_window_close(yt_download_window):
+def swap_window_close(yt_download_window, web):
     # Search for pop ups
     try:
         window_after = web.window_handles[1]
@@ -111,10 +94,12 @@ def swap_window_close(yt_download_window):
         print('No pop ups')
 
 
-def convert_and_download(url_to_download, mode):
+def convert_and_download(url_to_download, mode, web):
     # For our recursion. We want to make this as dynamic as possible.
+    current_web = web
     current_download_url = url_to_download
     current_mode = mode
+    current_window = web.current_window_handle  # This is the same as web.window_handles[0] which is the initial web
 
     try:
         # We want these things to be normal regardless of mode.
@@ -127,7 +112,7 @@ def convert_and_download(url_to_download, mode):
     try:
         WebDriverWait(web, 30).until(EC.element_to_be_clickable(('xpath', yt_converter_download_button)))
         web.find_element_by_xpath(yt_converter_download_button).click()
-        swap_window_close(current_window)
+        swap_window_close(current_window, current_web)
         # But if theres an initial and that initial != the final then theres a next button that we need to click
         if mode == 'initial' or mode == 'middle':
             web.find_element_by_xpath(yt_convert_next_button).click()
@@ -139,33 +124,39 @@ def convert_and_download(url_to_download, mode):
             Note: The issue isn't anything with the program but rather the website itself so we need to find a way to 
             identify which of the two are causing the problem
         """
-        if check_existence_of_xpath(yt_error_here_button):
+        if check_existence_of_xpath(yt_error_here_button, current_web):
             print('Sorry we got a browser error. Retrying with the same link')
             # We need to wait for that download button to appear before running the process again
             WebDriverWait(web, 10).until(EC.element_to_be_clickable(('xpath', '//*[@id="input"]')))
             # We are back at the home page so we need to run this function again with the same mode
             print(f'Past the driver wait, url:{current_download_url=}, mode:{mode=}')
-            convert_and_download(current_download_url, current_mode)
+            convert_and_download(current_download_url, current_mode, current_web)
         else:
             print('We apologize but your conversion exceeded 30 sec. We will wait for another 1 minute and 30 seconds')
             WebDriverWait(web, 90).until(EC.element_to_be_clickable(('xpath', yt_converter_download_button)))
             web.find_element_by_xpath(yt_converter_download_button).click()
-            swap_window_close(current_window)
+            swap_window_close(current_window, current_web)
 
 
-# Start putting the url and downloading the mp3 version of the yt link
-for url in multi_yt_url:
-    if url == initial_url and url != last_url:
-        # Url is the initial but not final which means there are some middle urls
-        # We don't want to end off here because there are some middle urls
-        convert_and_download(url, mode='initial')
-    elif url != initial_url and url != last_url:
-        # This is part of the middle url
-        convert_and_download(url, mode='middle')
-    else:
-        # Url is the last one but could also be the first if the list only contains one url
-        convert_and_download(url, mode='first_and_last')
-        wait_for_download(default_download_path)
-
-
+def download_music(multi_yt_url):
+    print(multi_yt_url)
+    web = set_up()
+    initial_url = multi_yt_url[0]['url']
+    last_url = multi_yt_url[-1]['url']
+    # Start putting the url and downloading the mp3 version of the yt link
+    for url_dict in multi_yt_url:
+        # We are targeting the url. Since we passed in dictionaries, we want the url key's value.
+        url = url_dict['url']
+        print(f'{url=}')
+        if url == initial_url and url != last_url:
+            # Url is the initial but not final which means there are some middle urls
+            # We don't want to end off here because there are some middle urls
+            convert_and_download(url, mode='initial', web=web)
+        elif url != initial_url and url != last_url:
+            # This is part of the middle url
+            convert_and_download(url, mode='middle',web=web)
+        else:
+            # Url is the last one but could also be the first if the list only contains one url
+            convert_and_download(url, mode='first_and_last', web=web)
+            wait_for_download(default_download_path, web=web)
 
