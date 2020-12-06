@@ -1,10 +1,15 @@
 from tkinter import *
+from tkinter import filedialog
 from bs4 import *
 import html5lib
 import requests
 from musicDownload import download_music
+from collections import deque
 
 all_yt_urls = []
+one_download_dir = deque(maxlen=1)
+# We set this to an empty string as a default value
+one_download_dir.append('')
 
 
 # all of our functions that we are going to use with tkinter
@@ -31,9 +36,21 @@ def delete_url(event):
 
 def download():
     print('Ready', all_yt_urls)
-    download_music(all_yt_urls)
+    # We are going to take down the download directory and since there is only one index we use [0]
+    download_dir = one_download_dir[0]
+    # If the root directory is blank then we use our default download directory
+    if download_dir == '':
+        print('Failed test')
+        download_music(all_yt_urls)
+    else:
+        print('Test completed', download_dir)
+        download_music(all_yt_urls, changed_dir=download_dir)
 
 
+def change_download_dir():
+    root.directory = filedialog.askdirectory()
+    print(root.directory)
+    one_download_dir.append(root.directory)
 
 # We set up a root
 root = Tk()
@@ -79,9 +96,12 @@ all_urls.grid_propagate(0)
 all_urls.config(highlightthickness=0)
 all_urls.bind('<Double-Button>', delete_url)
 
+# Change Download Directory
+switch_dir = Button(root, command=change_download_dir, bg=COLOR, text='Change Download Directory')
+switch_dir.grid(row=4, column=1)
 # Download Section
 download_button = Button(root, text='Ready', bg=COLOR, command=download)
-download_button.grid(row=4, column=1)
+download_button.grid(row=5, column=1)
 
 # This makes sure that the window does not close
 root.mainloop()

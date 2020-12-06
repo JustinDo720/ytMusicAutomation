@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
 from time import sleep
+import shutil
 
 """
 Path Section:
@@ -31,16 +32,14 @@ def set_up():
     # Creating the default download root
     if not os.path.exists(default_download_path):
         os.mkdir(default_download_path)
-
     # FireFox Preferences for Selenium
     fp = webdriver.FirefoxProfile()
-    fp.set_preference('browser.download.dir', default_download_path)
     fp.set_preference('browser.download.folderList', 2)
     fp.set_preference('browser.download.manager.showWhenStarting', False)
     # This preference ignores the download tab that asks what to do with mp3 files
     fp.set_preference('browser.helperApps.neverAsk.saveToDisk', '.mp3 audio/mpeg')
-    # We are going to request a url from users and use that url to download using a youtube to mp3 converter
-
+    # We are going to send the download to our default download folder which is at music_downloaded directory
+    fp.set_preference('browser.download.dir', default_download_path)
     web = webdriver.Firefox(executable_path=geckodriver_path, firefox_profile=fp)
     web.get(yt_converter_url)
     return web
@@ -138,8 +137,9 @@ def convert_and_download(url_to_download, mode, web):
             swap_window_close(current_window, current_web)
 
 
-def download_music(multi_yt_url):
+def download_music(multi_yt_url, changed_dir=None):
     print(multi_yt_url)
+    print(changed_dir)
     web = set_up()
     initial_url = multi_yt_url[0]['url']
     last_url = multi_yt_url[-1]['url']
@@ -154,9 +154,12 @@ def download_music(multi_yt_url):
             convert_and_download(url, mode='initial', web=web)
         elif url != initial_url and url != last_url:
             # This is part of the middle url
-            convert_and_download(url, mode='middle',web=web)
+            convert_and_download(url, mode='middle', web=web)
         else:
             # Url is the last one but could also be the first if the list only contains one url
             convert_and_download(url, mode='first_and_last', web=web)
             wait_for_download(default_download_path, web=web)
-
+            # Once all the downloads are in we are going to check if any changes were made to the default dir
+            # If the user changes the download path we will send this music_downloaded directory to that path
+            if changed_dir:
+                shutil.move(default_download_path, changed_dir)
