@@ -1,12 +1,11 @@
 # This is the where we download the music request by the user
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
 from time import sleep
 import shutil
+from musicDownloadPlaylist import all_links_from_playlist
 
 """
 Path Section:
@@ -163,3 +162,4 @@ def download_music(multi_yt_url, changed_dir=None):
             # If the user changes the download path we will send this music_downloaded directory to that path
             if changed_dir:
                 shutil.move(default_download_path, changed_dir)
+
