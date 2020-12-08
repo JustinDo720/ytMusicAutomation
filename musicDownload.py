@@ -1,12 +1,11 @@
 # This is the where we download the music request by the user
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
 from time import sleep
 import shutil
+from musicDownloadPlaylist import all_links_from_playlist
 
 """
 Path Section:
@@ -93,12 +92,6 @@ def swap_window_close(yt_download_window, web):
         print('No pop ups')
 
 
-def links_from_playlist():
-    # example url: https://www.youtube.com/watch?v=32faUlvDxCw&list=PLna2m8Qg4Uj54H6-vz6Vbwv2FgRwio71p&index=1
-    url_base = r'https://www.youtube.com/playlist?list=PLna2m8Qg4Uj54H6-vz6Vbwv2FgRwio71pp&index='
-    
-
-
 def convert_and_download(url_to_download, mode, web):
     # For our recursion. We want to make this as dynamic as possible.
     current_web = web
@@ -170,4 +163,3 @@ def download_music(multi_yt_url, changed_dir=None):
             if changed_dir:
                 shutil.move(default_download_path, changed_dir)
 
-links_from_playlist()
