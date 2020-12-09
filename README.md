@@ -15,5 +15,5 @@ in their youtube link and Selenium will do the work.
 * [x] Hook the selenium program to a gui like Tkinter
 * [ ] Chrome or Firefox? Basically make the program more robust 
 * [x] Is there a way to close down the pop up tabs
-* [ ] Move files to another destination? Can users choose?
+* [x] Move files to another destination? Can users choose?
  
