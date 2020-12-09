@@ -47,6 +47,33 @@ def download():
         download_music(all_yt_urls, changed_dir=download_dir)
 
 
+def download_from_playlist():
+
+    def start_download():
+        link = playlist_entry.get()
+        download_dir = one_download_dir[0]
+        if link != '':
+            if download_dir:
+                download_music(playlist_link=link, changed_dir=download_dir, multi_yt_url=None)
+            else:
+                download_music(playlist_link=link, multi_yt_url=None)
+
+    playlist_root = Toplevel(root)
+    playlist_root.title = 'Download Playlist'
+    playlist_root.geometry('500x100')
+    playlist_root.config(bg=COLOR)
+
+    intro_text_playlist = 'Please enter the link of your youtube playlist below'
+    intro_label_playlist = Label(playlist_root, text=intro_text_playlist, bg=COLOR, justify='center')
+    intro_label_playlist.grid(row=0, column=1)
+
+    playlist_entry = Entry(playlist_root, width=80, bg=COLOR)
+    playlist_entry.grid(row=1, column=1)
+
+    download_button_playlist = Button(playlist_root, text='Download', bg=COLOR, command= start_download)
+    download_button_playlist.grid(row=2, column=1)
+
+
 def change_download_dir():
     root.directory = filedialog.askdirectory()
     print(root.directory)
@@ -96,12 +123,18 @@ all_urls.grid_propagate(0)
 all_urls.config(highlightthickness=0)
 all_urls.bind('<Double-Button>', delete_url)
 
+# Change to download playlist mode
+switch_to_playlist_mode = Button(root, command=download_from_playlist, text= 'Download from Playlist Here', bg=COLOR)
+switch_to_playlist_mode.grid(row=4, column=1)
+
+
 # Change Download Directory
 switch_dir = Button(root, command=change_download_dir, bg=COLOR, text='Change Download Directory')
-switch_dir.grid(row=4, column=1)
+switch_dir.grid(row=5, column=1)
+
 # Download Section
 download_button = Button(root, text='Ready', bg=COLOR, command=download)
-download_button.grid(row=5, column=1)
+download_button.grid(row=6, column=1)
 
 # This makes sure that the window does not close
 root.mainloop()

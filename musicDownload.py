@@ -136,10 +136,14 @@ def convert_and_download(url_to_download, mode, web):
             swap_window_close(current_window, current_web)
 
 
-def download_music(multi_yt_url, changed_dir=None):
+def download_music(multi_yt_url, playlist_link=None, changed_dir=None):
     print(multi_yt_url)
-    print(changed_dir)
+    if playlist_link:
+        multi_yt_url = all_links_from_playlist(playlist_link)
+
     web = set_up()
+
+    print(multi_yt_url)
     initial_url = multi_yt_url[0]['url']
     last_url = multi_yt_url[-1]['url']
     # Start putting the url and downloading the mp3 version of the yt link
