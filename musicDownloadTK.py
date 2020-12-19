@@ -35,16 +35,18 @@ def delete_url(event):
 
 
 def download():
-    print('Ready', all_yt_urls)
-    # We are going to take down the download directory and since there is only one index we use [0]
-    download_dir = one_download_dir[0]
-    # If the root directory is blank then we use our default download directory
-    if download_dir == '':
-        print('Failed test')
-        download_music(all_yt_urls)
-    else:
-        print('Test completed', download_dir)
-        download_music(all_yt_urls, changed_dir=download_dir)
+    # if all_urls list exists
+    if all_urls:
+        print('Ready', all_yt_urls)
+        # We are going to take down the download directory and since there is only one index we use [0]
+        download_dir = one_download_dir[0]
+        # If the root directory is blank then we use our default download directory
+        if download_dir == '':
+            print('Failed test')
+            download_music(all_yt_urls)
+        else:
+            print('Test completed', download_dir)
+            download_music(all_yt_urls, changed_dir=download_dir)
 
 
 def download_from_playlist():
@@ -79,10 +81,28 @@ def change_download_dir():
     print(root.directory)
     one_download_dir.append(root.directory)
 
+
+def search_music_yt():
+
+    search_root = Toplevel(root)
+    search_root.title('Search for Music')
+    search_root.geometry('500x100')
+    search_root.config(bg=COLOR)
+
+    # Instructions
+    instruction_message = 'Please type the name of the author and also the song for us to search up'
+    instruction_display = Label(search_root, text=instruction_message, bg=COLOR)
+    instruction_display.grid(row=0, column=1)
+
+    # Search bar for users to search for a video to download
+    search_bar = Entry(search_root, width=80, bg=COLOR)
+    search_bar.grid(row=1, column=1)
+
+
 # We set up a root
 root = Tk()
 root.title('Music Download')
-root.geometry('900x500')  # W,H
+root.geometry('900x600')  # W,H
 COLOR = 'snow'
 root.config(bg=COLOR)
 # The Title
@@ -123,18 +143,21 @@ all_urls.grid_propagate(0)
 all_urls.config(highlightthickness=0)
 all_urls.bind('<Double-Button>', delete_url)
 
+# Search for music option
+search_music_button = Button(root, command=search_music_yt, text='Search for music', bg=COLOR)
+search_music_button.grid(row=4, column=1)
+
 # Change to download playlist mode
 switch_to_playlist_mode = Button(root, command=download_from_playlist, text= 'Download from Playlist Here', bg=COLOR)
-switch_to_playlist_mode.grid(row=4, column=1)
-
+switch_to_playlist_mode.grid(row=5, column=1)
 
 # Change Download Directory
 switch_dir = Button(root, command=change_download_dir, bg=COLOR, text='Change Download Directory')
-switch_dir.grid(row=5, column=1)
+switch_dir.grid(row=6, column=1)
 
 # Download Section
 download_button = Button(root, text='Ready', bg=COLOR, command=download)
-download_button.grid(row=6, column=1)
+download_button.grid(row=7, column=1)
 
 # This makes sure that the window does not close
 root.mainloop()
