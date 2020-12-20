@@ -11,26 +11,20 @@ We are going to need the google python api lib
 api_key = os.environ.get('GOOGLE_YOUTUBE_API_KEY')
 youtube = build('youtube', 'v3', developerKey=api_key)
 
-request = youtube.search().list(
-    part='snippet',
-    maxResults=5,
-    q='BEAUZ - Outerspace (feat. Dallas) [Monstercat Release]'
 
-)
+def search_for_music(music):
+    request = youtube.search().list(
+        part='snippet',
+        maxResults=5,
+        q=music
 
-response = request.execute()
+    )
 
-all_thumbnails = [videos['snippet']['thumbnails']['medium']['url'] for videos in response['items']]
-all_videos = [{'video_title': videos['snippet']['title'], 'video_id': videos['id']['videoId']}
-              for videos in response['items']]
+    response = request.execute()
 
-print(all_thumbnails)
-print(all_videos)
-save_thumbnail(all_thumbnails)
+    all_thumbnails = [videos['snippet']['thumbnails']['medium']['url'] for videos in response['items']]
+    all_videos = [{'video_title': videos['snippet']['title'], 'video_id': videos['id']['videoId']}
+                  for videos in response['items']]
 
-#
-# for videos in response['items']:
-#     video_id = videos['id']['videoId']
-#     video_title = videos['snippet']['title']
-#     video_thumbnail_medium = videos['snippet']['thumbnails']['medium']['url']
-#     print(video_title)
+    save_thumbnail(all_thumbnails)
+    return all_videos
