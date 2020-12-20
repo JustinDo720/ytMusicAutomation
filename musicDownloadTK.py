@@ -1,10 +1,11 @@
 from tkinter import *
 from tkinter import filedialog
 from bs4 import *
-import html5lib
+from PIL import Image
 import requests
 from musicDownload import download_music
 from collections import deque
+from io import BytesIO
 
 all_yt_urls = []
 one_download_dir = deque(maxlen=1)
@@ -97,6 +98,12 @@ def search_music_yt():
     # Search bar for users to search for a video to download
     search_bar = Entry(search_root, width=80, bg=COLOR)
     search_bar.grid(row=1, column=1)
+
+    response = requests.get('https://i.ytimg.com/vi/nEoAFBwbYzw/mqdefault.jpg')
+    print(BytesIO(response.content))
+    # test_image = Image.open(BytesIO(response.content))
+    # image_label = Label(image=test_image)
+    # image_label.grid(row=2, column=1)
 
 
 # We set up a root

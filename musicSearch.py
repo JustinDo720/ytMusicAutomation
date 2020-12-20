@@ -1,5 +1,6 @@
 import os
 from googleapiclient.discovery import build
+from musicImage import save_thumbnail
 
 '''
 We are going to need the google python api lib 
@@ -19,8 +20,17 @@ request = youtube.search().list(
 
 response = request.execute()
 
-for videos in response['items']:
-    video_id = videos['id']['videoId']
-    video_title = videos['snippet']['title']
-    video_thumbnail_medium = videos['snippet']['thumbnails']['medium']['url']
-    print(video_title)
+all_thumbnails = [videos['snippet']['thumbnails']['medium']['url'] for videos in response['items']]
+all_videos = [{'video_title': videos['snippet']['title'], 'video_id': videos['id']['videoId']}
+              for videos in response['items']]
+
+print(all_thumbnails)
+print(all_videos)
+save_thumbnail(all_thumbnails)
+
+#
+# for videos in response['items']:
+#     video_id = videos['id']['videoId']
+#     video_title = videos['snippet']['title']
+#     video_thumbnail_medium = videos['snippet']['thumbnails']['medium']['url']
+#     print(video_title)

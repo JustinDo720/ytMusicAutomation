@@ -2,3 +2,4 @@ venv/
 __pycache__/
 music_downloaded/
 geckodriver.log
+yt_thumbnails
