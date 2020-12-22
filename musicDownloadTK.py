@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import filedialog
+from tkinter import ttk
 from bs4 import *
 from PIL import ImageTk, Image
 import requests
@@ -12,7 +13,6 @@ all_yt_urls = []
 one_download_dir = deque(maxlen=1)
 # We set this to an empty string as a default value
 one_download_dir.append('')
-
 
 # all of our functions that we are going to use with tkinter
 def display_url(event):
@@ -51,31 +51,14 @@ def download():
             download_music(all_yt_urls, changed_dir=download_dir)
 
 
-def download_from_playlist():
-
-    def start_download():
-        link = playlist_entry.get()
-        download_dir = one_download_dir[0]
-        if link != '':
-            if download_dir:
-                download_music(playlist_link=link, changed_dir=download_dir, multi_yt_url=None)
-            else:
-                download_music(playlist_link=link, multi_yt_url=None)
-
-    playlist_root = Toplevel(root)
-    playlist_root.title = 'Download Playlist'
-    playlist_root.geometry('500x100')
-    playlist_root.config(bg=COLOR)
-
-    intro_text_playlist = 'Please enter the link of your youtube playlist below'
-    intro_label_playlist = Label(playlist_root, text=intro_text_playlist, bg=COLOR, justify='center')
-    intro_label_playlist.grid(row=0, column=1)
-
-    playlist_entry = Entry(playlist_root, width=80, bg=COLOR)
-    playlist_entry.grid(row=1, column=1)
-
-    download_button_playlist = Button(playlist_root, text='Download', bg=COLOR, command= start_download)
-    download_button_playlist.grid(row=2, column=1)
+def start_download():
+    link = playlist_entry.get()
+    download_dir = one_download_dir[0]
+    if link != '':
+        if download_dir:
+            download_music(playlist_link=link, changed_dir=download_dir, multi_yt_url=None)
+        else:
+            download_music(playlist_link=link, multi_yt_url=None)
 
 
 def change_download_dir():
@@ -84,60 +67,64 @@ def change_download_dir():
     one_download_dir.append(root.directory)
 
 
-def search_music_yt():
+def fetch_music(event):
+    # This is the solution! Apparently without the global image var theres an issue displaying the image.
+    global video_img1
+    global video_img2
+    global video_img3
+    global video_img4
+    global video_img5
 
-    def fetch_and_display_music(event):
-        music_searched = search_bar.get()
-        image_path = f'{os.getcwd()}\\yt_thumbnails\\'
+    music_searched = search_bar.get()
+    image_path = f'{os.getcwd()}\\yt_thumbnails\\'
 
-        if music_searched:
-            # We are using the function imported from musicSearch.py which will return a list titles and their video id
-            all_music = search_for_music(music_searched)
-            # Expand to fit 5 possible music to choose from
-            search_root.geometry('700x500')
+    if music_searched:
+        # We are using the function imported from musicSearch.py which will return a list titles and their video id
+        all_music = search_for_music(music_searched)
 
-            # Display all searched videos
-            for count, video in enumerate(all_music, 1):
-                corresponding_thumbnail = f'{image_path}image_{count}.jpg'
-                print(corresponding_thumbnail)
+        # Option1
+        video_img1 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{1}.jpg'))
+        video_title1 = all_music[0]['video_title']
+        video_frame1 = Button(search_mode, image=video_img1, text=video_title1,
+                              compound='top', width=450, height=200)
+        video_frame1.grid(row=5, column=1)
 
-                # Using the pillow lib to use ImageTk. Sometimes the pictures wont work using PhotoImage by itself
-                video_image = ImageTk.PhotoImage(Image.open(corresponding_thumbnail))
-                video_button = Button(search_root,
-                                      image=video_image,
-                                      text=video['video_title'],
-                                      compound='top',
-                                      width=350,
-                                      height=200)
+        # Option2
+        video_img2 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{2}.jpg'))
+        video_title2 = all_music[1]['video_title']
+        video_frame2 = Button(search_mode, image=video_img2, text=video_title2,
+                              compound='top', width=450, height=200)
+        video_frame2.grid(row=6, column=1)
 
-                video_button.grid(row=2+count, column=1)
+        # Option3
+        video_img3 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{3}.jpg'))
+        video_title3 = all_music[2]['video_title']
+        video_frame3 = Button(search_mode, image=video_img3, text=video_title3,
+                              compound='top', width=450, height=200)
+        video_frame3.grid(row=7, column=1)
 
-    search_root = Toplevel(root)
-    search_root.title('Search for Music')
-    search_root.geometry('500x100')
-    search_root.config(bg=COLOR)
+        # Option4
+        video_img4 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{4}.jpg'))
+        video_title4 = all_music[3]['video_title']
+        video_frame4 = Button(search_mode, image=video_img4, text=video_title4,
+                              compound='top', width=450, height=200)
+        video_frame4.grid(row=8, column=1)
 
-    # Instructions
-    instruction_message = 'Please type the name of the author and also the song for us to search up'
-    instruction_display = Label(search_root, text=instruction_message, bg=COLOR)
-    instruction_display.grid(row=0, column=1)
-
-    # Search bar for users to search for a video to download
-    search_bar = Entry(search_root, width=80, bg=COLOR)
-    search_bar.grid(row=1, column=1)
-    search_bar.bind('<Return>', fetch_and_display_music)
-
-    # Search Button
-    search_button = Button(search_root, text='Search', bg=COLOR, command=fetch_and_display_music)
-    search_button.grid(row=2, column=1)
+        # Option5
+        video_img5 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{5}.jpg'))
+        video_title5 = all_music[4]['video_title']
+        video_frame5 = Button(search_mode, image=video_img5, text=video_title5,
+                              compound='top', width=450, height=200)
+        video_frame5.grid(row=9, column=1)
 
 
 # We set up a root
 root = Tk()
 root.title('Music Download')
-root.geometry('900x600')  # W,H
+root.geometry('900x900')  # W,H
 COLOR = 'snow'
 root.config(bg=COLOR)
+
 # The Title
 title_name = 'Automated Music Download'
 title_label = Label(root, text=title_name, bg=COLOR)
@@ -154,43 +141,90 @@ Our program aims to reduce the time you take to download music. Usually you woul
 
 We perform the steps as above but you won't have to do this for every single link. 
 Rather, you just need to enter all your links here and we will take care of the rest :)
+'''
 
-Please enter the name of your song and Url below.
-Note: You can remove a link by double clicking'''
 intro_label = Label(root, text=intro_text, bg=COLOR)
 intro_label.grid(row=1, column=1)
 intro_label.config(font=('Courier', 12))
 
+
+# Switch between modes
+diff_modes = ttk.Notebook(root)
+diff_modes.config(width=700, height=600)
+download_mode = ttk.Frame(diff_modes, )
+playlist_mode = ttk.Frame(diff_modes)
+search_mode = ttk.Frame(diff_modes)
+
+diff_modes.add(download_mode, text='Download Music with a link')
+diff_modes.add(playlist_mode, text='Download Music with a playlist link')
+diff_modes.add(search_mode, text='Search for Music to Download')
+
+diff_modes.grid(row=2, column=1)
+
+# <-- Download Music with a link Mode -->
 # Url
+instructions = '''
+Please enter the name of your song and Url below.
+Note: You can remove a link by double clicking'''
 url = StringVar()
-url_entry = Entry(root, textvariable=url, bg=COLOR, width=80)
-url_entry.grid(row=2, column=1)
+instruction_label = Label(download_mode, text=instructions)
+instruction_label.grid(row=0, column=1)
+
+url_entry = Entry(download_mode, textvariable=url, bg=COLOR, width=80)
+url_entry.grid(row=1, column=1)
 
 # If a user presses enter we will save that url
 url_entry.bind('<Return>', display_url)
 
 # Display all the urls
-all_urls = Listbox(root, background=COLOR, width=100, bd=0)
-all_urls.grid(row=3, column=1)
+all_urls = Listbox(download_mode, width=100, bd=0)
+all_urls.grid(row=2, column=1)
 all_urls.grid_propagate(0)
 all_urls.config(highlightthickness=0)
 all_urls.bind('<Double-Button>', delete_url)
 
-# Search for music option
-search_music_button = Button(root, command=search_music_yt, text='Search for music', bg=COLOR)
-search_music_button.grid(row=4, column=1)
-
-# Change to download playlist mode
-switch_to_playlist_mode = Button(root, command=download_from_playlist, text= 'Download from Playlist Here', bg=COLOR)
-switch_to_playlist_mode.grid(row=5, column=1)
+# Download Section
+download_button = Button(download_mode, text='Ready', bg=COLOR, command=download)
+download_button.grid(row=4, column=1)
 
 # Change Download Directory
-switch_dir = Button(root, command=change_download_dir, bg=COLOR, text='Change Download Directory')
-switch_dir.grid(row=6, column=1)
+switch_dir = Button(download_mode, command=change_download_dir, bg=COLOR, text='Change Download Directory')
+switch_dir.grid(row=3, column=1)
 
-# Download Section
-download_button = Button(root, text='Ready', bg=COLOR, command=download)
-download_button.grid(row=7, column=1)
+# <-- End Download Music with a link Mode -->
 
+
+# <-- Download Music with a playlist link -->
+
+intro_text_playlist = 'Please enter the link of your youtube playlist below'
+intro_label_playlist = Label(playlist_mode, text=intro_text_playlist, bg=COLOR, justify='center')
+intro_label_playlist.grid(row=0, column=1)
+
+playlist_entry = Entry(playlist_mode, width=80, bg=COLOR)
+playlist_entry.grid(row=1, column=1)
+
+download_button_playlist = Button(playlist_mode, text='Download', bg=COLOR, command=start_download)
+download_button_playlist.grid(row=2, column=1)
+
+
+# <-- End Download Music with a playlist link -->
+
+# <-- Search for Music to Download -->
+
+# Instructions
+instruction_message = 'Please type the name of the author and also the song for us to search up'
+instruction_display = Label(search_mode, text=instruction_message, bg=COLOR)
+instruction_display.grid(row=0, column=1)
+
+# Search bar for users to search for a video to download
+search_bar = Entry(search_mode, width=80, bg=COLOR)
+search_bar.grid(row=1, column=1)
+search_bar.bind('<Return>', fetch_music)
+
+# Search Button
+search_button = Button(search_mode, text='Search', bg=COLOR, command=fetch_music)
+search_button.grid(row=2, column=1)
+
+# <-- End Search for Music to Download -->
 # This makes sure that the window does not close
 root.mainloop()
