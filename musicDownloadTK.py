@@ -1,11 +1,12 @@
 from tkinter import *
 from tkinter import filedialog
 from bs4 import *
-from PIL import Image
+from PIL import ImageTk, Image
 import requests
 from musicDownload import download_music
+from musicSearch import search_for_music
 from collections import deque
-from io import BytesIO
+import os
 
 all_yt_urls = []
 one_download_dir = deque(maxlen=1)
@@ -85,6 +86,32 @@ def change_download_dir():
 
 def search_music_yt():
 
+    def fetch_and_display_music(event):
+        music_searched = search_bar.get()
+        image_path = f'{os.getcwd()}\\yt_thumbnails\\'
+
+        if music_searched:
+            # We are using the function imported from musicSearch.py which will return a list titles and their video id
+            all_music = search_for_music(music_searched)
+            # Expand to fit 5 possible music to choose from
+            search_root.geometry('700x500')
+
+            # Display all searched videos
+            for count, video in enumerate(all_music, 1):
+                corresponding_thumbnail = f'{image_path}image_{count}.jpg'
+                print(corresponding_thumbnail)
+
+                # Using the pillow lib to use ImageTk. Sometimes the pictures wont work using PhotoImage by itself
+                video_image = ImageTk.PhotoImage(Image.open(corresponding_thumbnail))
+                video_button = Button(search_root,
+                                      image=video_image,
+                                      text=video['video_title'],
+                                      compound='top',
+                                      width=350,
+                                      height=200)
+
+                video_button.grid(row=2+count, column=1)
+
     search_root = Toplevel(root)
     search_root.title('Search for Music')
     search_root.geometry('500x100')
@@ -98,12 +125,11 @@ def search_music_yt():
     # Search bar for users to search for a video to download
     search_bar = Entry(search_root, width=80, bg=COLOR)
     search_bar.grid(row=1, column=1)
+    search_bar.bind('<Return>', fetch_and_display_music)
 
-    response = requests.get('https://i.ytimg.com/vi/nEoAFBwbYzw/mqdefault.jpg')
-    print(BytesIO(response.content))
-    # test_image = Image.open(BytesIO(response.content))
-    # image_label = Label(image=test_image)
-    # image_label.grid(row=2, column=1)
+    # Search Button
+    search_button = Button(search_root, text='Search', bg=COLOR, command=fetch_and_display_music)
+    search_button.grid(row=2, column=1)
 
 
 # We set up a root
