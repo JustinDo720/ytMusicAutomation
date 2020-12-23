@@ -14,6 +14,7 @@ one_download_dir = deque(maxlen=1)
 # We set this to an empty string as a default value
 one_download_dir.append('')
 
+
 # all of our functions that we are going to use with tkinter
 def display_url(event):
     yt_link = url_entry.get()
@@ -176,12 +177,17 @@ url_entry.grid(row=1, column=1)
 # If a user presses enter we will save that url
 url_entry.bind('<Return>', display_url)
 
+# ScrollWheel for the ListBox
+all_urls_scrollbar = Scrollbar(download_mode, orient='vertical')
+all_urls_scrollbar.grid(row=2, column=2, sticky=NE)
+
 # Display all the urls
-all_urls = Listbox(download_mode, width=100, bd=0)
+all_urls = Listbox(download_mode, yscrollcommand= all_urls_scrollbar.set, width=100, height=10, bd=0)
 all_urls.grid(row=2, column=1)
 all_urls.grid_propagate(0)
-all_urls.config(highlightthickness=0)
+all_urls.config(highlightthickness=0, scrollregion=all_urls.bbox(5))
 all_urls.bind('<Double-Button>', delete_url)
+all_urls_scrollbar.config(command=all_urls.yview)
 
 # Download Section
 download_button = Button(download_mode, text='Ready', bg=COLOR, command=download)
