@@ -23,8 +23,15 @@ def search_for_music(music):
     response = request.execute()
 
     all_thumbnails = [videos['snippet']['thumbnails']['medium']['url'] for videos in response['items']]
-    all_videos = [{'video_title': videos['snippet']['title'], 'video_id': videos['id']['videoId']}
-                  for videos in response['items']]
 
-    save_thumbnail(all_thumbnails)
+    # Our save_thumbnail function from musicImage returns a list of the file name such as image_1.jpg and image_2.jpg
+    new_images = save_thumbnail(all_thumbnails)
+
+    # Note that this will go in order meaning index 0 will have image_1.jpg along with our title and id
+    all_videos = [{'video_title': videos['snippet']['title'],
+                   'video_id': videos['id']['videoId'],
+                   'video_photo': photo}
+                  for videos in response['items']
+                  for photo in new_images]
+
     return all_videos
