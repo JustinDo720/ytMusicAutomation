@@ -3,6 +3,7 @@ import os
 
 
 def save_thumbnail(all_thumbnails):
+    new_images = []
     image_path = f'{os.getcwd()}/yt_thumbnails'
 
     if not os.path.exists(image_path):
@@ -18,3 +19,6 @@ def save_thumbnail(all_thumbnails):
             # We grab the bytes from the photos and write them to an actual photo placed in the image_path dir
             response = requests.get(thumbnail)
             f.write(response.content)
+            new_images.append(file_name)
+
+    return new_images

@@ -70,14 +70,29 @@ def change_download_dir():
 
 def fetch_music(event=None):
     # This is the solution! Apparently without the global image var theres an issue displaying the image.
-    global video_img1
-    global video_img2
-    global video_img3
-    global video_img4
-    global video_img5
+    global video_img1, video_img2, video_img3, video_img4, video_img5
 
     music_searched = search_bar.get()
     image_path = f'{os.getcwd()}\\yt_thumbnails\\'
+
+    def confirm_choice(choice):
+        global tk_choice_photo
+
+        confirm_tab = Toplevel(root)
+        confirm_tab.title = 'Confirm Choice'
+        confirm_tab.geometry = '500x300'
+
+        confirm_msg = f'Are you sure you want to download {choice["video_title"]}'
+        tk_choice_photo = ImageTk.PhotoImage(Image.open(image_path + choice['video_photo']))
+
+        confirm_label = Label(confirm_tab, image= tk_choice_photo, text=confirm_msg, compound='top')
+        confirm_label.grid(row=0, column=2)
+
+        decline_button = Button(confirm_tab, text='Decline')
+        decline_button.grid(row=1, column=3)
+
+        continue_button = Button(confirm_tab, text='Continue')
+        continue_button.grid(row=1, column=1)
 
     if music_searched:
         # We are using the function imported from musicSearch.py which will return a list titles and their video id
@@ -87,21 +102,24 @@ def fetch_music(event=None):
         video_img1 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{1}.jpg'))
         video_title1 = all_music[0]['video_title']
         video_frame1 = Button(search_mode, image=video_img1, text=video_title1,
-                              compound='top', width=450, height=200)
+                              compound='top', width=450, height=200,
+                              command= lambda: confirm_choice(all_music[0]))
         video_frame1.grid(row=5, column=1)
 
         # Option2
         video_img2 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{2}.jpg'))
         video_title2 = all_music[1]['video_title']
         video_frame2 = Button(search_mode, image=video_img2, text=video_title2,
-                              compound='top', width=450, height=200)
+                              compound='top', width=450, height=200,
+                              command= lambda: confirm_choice(all_music[1]))
         video_frame2.grid(row=6, column=1)
 
         # Option3
         video_img3 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{3}.jpg'))
         video_title3 = all_music[2]['video_title']
         video_frame3 = Button(search_mode, image=video_img3, text=video_title3,
-                              compound='top', width=450, height=200)
+                              compound='top', width=450, height=200,
+                              command= lambda: confirm_choice(all_music[2]))
         video_frame3.grid(row=7, column=1)
 
 
@@ -109,7 +127,8 @@ def fetch_music(event=None):
         video_img4 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{4}.jpg'))
         video_title4 = all_music[3]['video_title']
         video_frame4 = Button(search_mode, image=video_img4, text=video_title4,
-                              compound='top', width=450, height=200)
+                              compound='top', width=450, height=200,
+                              command= lambda: confirm_choice(all_music[3]))
         video_frame4.grid(row=8, column=1)
 
 
@@ -117,7 +136,8 @@ def fetch_music(event=None):
         video_img5 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{5}.jpg'))
         video_title5 = all_music[4]['video_title']
         video_frame5 = Button(search_mode, image=video_img5, text=video_title5,
-                              compound='top', width=450, height=200)
+                              compound='top', width=450, height=200,
+                              command= lambda: confirm_choice(all_music[4]))
         video_frame5.grid(row=9, column=1)
 
 
