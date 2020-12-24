@@ -52,7 +52,7 @@ def download():
             download_music(all_yt_urls, changed_dir=download_dir)
 
 
-def start_download():
+def start_download(event=None):
     link = playlist_entry.get()
     download_dir = one_download_dir[0]
     if link != '':
@@ -68,7 +68,7 @@ def change_download_dir():
     one_download_dir.append(root.directory)
 
 
-def fetch_music(event):
+def fetch_music(event=None):
     # This is the solution! Apparently without the global image var theres an issue displaying the image.
     global video_img1
     global video_img2
@@ -104,12 +104,14 @@ def fetch_music(event):
                               compound='top', width=450, height=200)
         video_frame3.grid(row=7, column=1)
 
+
         # Option4
         video_img4 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{4}.jpg'))
         video_title4 = all_music[3]['video_title']
         video_frame4 = Button(search_mode, image=video_img4, text=video_title4,
                               compound='top', width=450, height=200)
         video_frame4.grid(row=8, column=1)
+
 
         # Option5
         video_img5 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{5}.jpg'))
@@ -208,6 +210,7 @@ intro_label_playlist.grid(row=0, column=1)
 
 playlist_entry = Entry(playlist_mode, width=80, bg=COLOR)
 playlist_entry.grid(row=1, column=1)
+playlist_entry.bind('<Return>', start_download)
 
 download_button_playlist = Button(playlist_mode, text='Download', bg=COLOR, command=start_download)
 download_button_playlist.grid(row=2, column=1)
