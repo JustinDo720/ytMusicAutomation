@@ -78,20 +78,25 @@ def fetch_music(event=None):
     def confirm_choice(choice):
         global tk_choice_photo
 
+        # Our confirm window
         confirm_tab = Toplevel(root)
         confirm_tab.title = 'Confirm Choice'
         confirm_tab.geometry = '500x300'
 
+        # url for our choice
+        yt_url = [{'url': f'https://www.youtube.com/watch?v={choice["video_id"]}'}]
+
+        # Widget options
         confirm_msg = f'Are you sure you want to download {choice["video_title"]}'
         tk_choice_photo = ImageTk.PhotoImage(Image.open(image_path + choice['video_photo']))
 
         confirm_label = Label(confirm_tab, image= tk_choice_photo, text=confirm_msg, compound='top')
         confirm_label.grid(row=0, column=2)
 
-        decline_button = Button(confirm_tab, text='Decline')
+        decline_button = Button(confirm_tab, text='Decline', command=confirm_tab.destroy)
         decline_button.grid(row=1, column=3)
 
-        continue_button = Button(confirm_tab, text='Continue')
+        continue_button = Button(confirm_tab, text='Continue', command= lambda: download_music(yt_url))
         continue_button.grid(row=1, column=1)
 
     if music_searched:
