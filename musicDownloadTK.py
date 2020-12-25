@@ -78,67 +78,98 @@ def fetch_music(event=None):
     def confirm_choice(choice):
         global tk_choice_photo
 
+        # Our confirm window
         confirm_tab = Toplevel(root)
         confirm_tab.title = 'Confirm Choice'
         confirm_tab.geometry = '500x300'
 
+        # url for our choice
+        yt_url = [{'url': f'https://www.youtube.com/watch?v={choice["video_id"]}'}]
+
+        # Widget options
         confirm_msg = f'Are you sure you want to download {choice["video_title"]}'
         tk_choice_photo = ImageTk.PhotoImage(Image.open(image_path + choice['video_photo']))
 
-        confirm_label = Label(confirm_tab, image= tk_choice_photo, text=confirm_msg, compound='top')
+        confirm_label = Label(confirm_tab, image=tk_choice_photo, text=confirm_msg, compound='top')
         confirm_label.grid(row=0, column=2)
 
-        decline_button = Button(confirm_tab, text='Decline')
+        decline_button = Button(confirm_tab, text='Decline', command=confirm_tab.destroy)
         decline_button.grid(row=1, column=3)
 
-        continue_button = Button(confirm_tab, text='Continue')
+        continue_button = Button(confirm_tab, text='Continue', command=lambda: download_music(yt_url))
         continue_button.grid(row=1, column=1)
 
     if music_searched:
         # We are using the function imported from musicSearch.py which will return a list titles and their video id
         all_music = search_for_music(music_searched)
 
+        # Our widgets to display options
+        option_frame = LabelFrame(search_mode)
+        option_frame.grid(row=3, column=1, pady=10)
+        option_canvas = Canvas(option_frame)
+        option_canvas.pack(side=LEFT)
+
+        # Scrollbar
+        yscrollbar = Scrollbar(option_frame, orient='vertical', command=option_canvas.yview)
+        yscrollbar.pack(side=RIGHT, fill='y')
+
+        # Frame to pack our buttons in
+        main_frame = Frame(option_canvas)
+        main_frame.pack()
+
+        # Configure for scrollwheel
+        main_frame.bind('<Configure>',
+                        lambda e:
+                        option_canvas.configure(scrollregion=option_canvas.bbox('all')))
+
+        option_canvas.create_window((0, 0), window=main_frame, anchor='nw')
+        option_canvas.configure(scrollregion=option_canvas.bbox('all'))
+        option_canvas.configure(yscrollcommand=yscrollbar.set)
+
         # Option1
         video_img1 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{1}.jpg'))
         video_title1 = all_music[0]['video_title']
-        video_frame1 = Button(search_mode, image=video_img1, text=video_title1,
+        video_frame1 = Button(main_frame, image=video_img1, text=video_title1,
                               compound='top', width=450, height=200,
-                              command= lambda: confirm_choice(all_music[0]))
-        video_frame1.grid(row=5, column=1)
+                              command=lambda: confirm_choice(all_music[0]))
+        # video_frame1.grid(row=5, column=1)
+        video_frame1.pack()
 
         # Option2
         video_img2 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{2}.jpg'))
         video_title2 = all_music[1]['video_title']
-        video_frame2 = Button(search_mode, image=video_img2, text=video_title2,
+        video_frame2 = Button(main_frame, image=video_img2, text=video_title2,
                               compound='top', width=450, height=200,
-                              command= lambda: confirm_choice(all_music[1]))
-        video_frame2.grid(row=6, column=1)
+                              command=lambda: confirm_choice(all_music[1]))
+        # video_frame2.grid(row=6, column=1)
+        video_frame2.pack()
 
         # Option3
         video_img3 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{3}.jpg'))
         video_title3 = all_music[2]['video_title']
-        video_frame3 = Button(search_mode, image=video_img3, text=video_title3,
+        video_frame3 = Button(main_frame, image=video_img3, text=video_title3,
                               compound='top', width=450, height=200,
-                              command= lambda: confirm_choice(all_music[2]))
-        video_frame3.grid(row=7, column=1)
-
+                              command=lambda: confirm_choice(all_music[2]))
+        # video_frame3.grid(row=7, column=1)
+        video_frame3.pack()
 
         # Option4
         video_img4 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{4}.jpg'))
         video_title4 = all_music[3]['video_title']
-        video_frame4 = Button(search_mode, image=video_img4, text=video_title4,
+        video_frame4 = Button(main_frame, image=video_img4, text=video_title4,
                               compound='top', width=450, height=200,
-                              command= lambda: confirm_choice(all_music[3]))
-        video_frame4.grid(row=8, column=1)
-
+                              command=lambda: confirm_choice(all_music[3]))
+        # video_frame4.grid(row=8, column=1)
+        video_frame4.pack()
 
         # Option5
         video_img5 = ImageTk.PhotoImage(Image.open(f'{image_path}image_{5}.jpg'))
         video_title5 = all_music[4]['video_title']
-        video_frame5 = Button(search_mode, image=video_img5, text=video_title5,
+        video_frame5 = Button(main_frame, image=video_img5, text=video_title5,
                               compound='top', width=450, height=200,
-                              command= lambda: confirm_choice(all_music[4]))
-        video_frame5.grid(row=9, column=1)
+                              command=lambda: confirm_choice(all_music[4]))
+        # video_frame5.grid(row=9, column=1)
+        video_frame5.pack()
 
 
 # We set up a root
@@ -170,7 +201,6 @@ intro_label = Label(root, text=intro_text, bg=COLOR)
 intro_label.grid(row=1, column=1)
 intro_label.config(font=('Courier', 12))
 
-
 # Switch between modes
 diff_modes = ttk.Notebook(root)
 diff_modes.config(width=700, height=600)
@@ -191,10 +221,10 @@ Please enter the name of your song and Url below.
 Note: You can remove a link by double clicking'''
 url = StringVar()
 instruction_label = Label(download_mode, text=instructions)
-instruction_label.grid(row=0, column=1)
+instruction_label.grid(row=0, column=1, pady=10)
 
 url_entry = Entry(download_mode, textvariable=url, bg=COLOR, width=80)
-url_entry.grid(row=1, column=1)
+url_entry.grid(row=1, column=1, pady=10)
 
 # If a user presses enter we will save that url
 url_entry.bind('<Return>', display_url)
@@ -204,8 +234,8 @@ all_urls_scrollbar = Scrollbar(download_mode, orient='vertical')
 all_urls_scrollbar.grid(row=2, column=2, sticky=NE)
 
 # Display all the urls
-all_urls = Listbox(download_mode, yscrollcommand= all_urls_scrollbar.set, width=100, height=10, bd=0)
-all_urls.grid(row=2, column=1)
+all_urls = Listbox(download_mode, yscrollcommand=all_urls_scrollbar.set, width=100, height=10, bd=0)
+all_urls.grid(row=2, column=1, pady=5, padx=40)
 all_urls.grid_propagate(0)
 all_urls.config(highlightthickness=0, scrollregion=all_urls.bbox(5))
 all_urls.bind('<Double-Button>', delete_url)
@@ -213,7 +243,7 @@ all_urls_scrollbar.config(command=all_urls.yview)
 
 # Download Section
 download_button = Button(download_mode, text='Ready', bg=COLOR, command=download)
-download_button.grid(row=4, column=1)
+download_button.grid(row=4, column=1, pady=5, padx=10)
 
 # Change Download Directory
 switch_dir = Button(download_mode, command=change_download_dir, bg=COLOR, text='Change Download Directory')
@@ -225,16 +255,15 @@ switch_dir.grid(row=3, column=1)
 # <-- Download Music with a playlist link -->
 
 intro_text_playlist = 'Please enter the link of your youtube playlist below'
-intro_label_playlist = Label(playlist_mode, text=intro_text_playlist, bg=COLOR, justify='center')
-intro_label_playlist.grid(row=0, column=1)
+intro_label_playlist = Label(playlist_mode, text=intro_text_playlist, justify='center')
+intro_label_playlist.grid(row=0, column=1, padx=115, pady=10)
 
 playlist_entry = Entry(playlist_mode, width=80, bg=COLOR)
-playlist_entry.grid(row=1, column=1)
+playlist_entry.grid(row=1, column=1, padx=115, pady=5)
 playlist_entry.bind('<Return>', start_download)
 
 download_button_playlist = Button(playlist_mode, text='Download', bg=COLOR, command=start_download)
-download_button_playlist.grid(row=2, column=1)
-
+download_button_playlist.grid(row=2, column=1, pady=10)
 
 # <-- End Download Music with a playlist link -->
 
@@ -242,17 +271,17 @@ download_button_playlist.grid(row=2, column=1)
 
 # Instructions
 instruction_message = 'Please type the name of the author and also the song for us to search up'
-instruction_display = Label(search_mode, text=instruction_message, bg=COLOR)
-instruction_display.grid(row=0, column=1)
+instruction_display = Label(search_mode, text=instruction_message)
+instruction_display.grid(row=0, column=1, pady=10)
 
 # Search bar for users to search for a video to download
 search_bar = Entry(search_mode, width=80, bg=COLOR)
-search_bar.grid(row=1, column=1)
+search_bar.grid(row=1, column=1, padx=115, pady=5)
 search_bar.bind('<Return>', fetch_music)
 
 # Search Button
 search_button = Button(search_mode, text='Search', bg=COLOR, command=fetch_music)
-search_button.grid(row=2, column=1)
+search_button.grid(row=2, column=1, padx=115, pady=10)
 
 # <-- End Search for Music to Download -->
 # This makes sure that the window does not close
