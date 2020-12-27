@@ -11,9 +11,14 @@ in their youtube link and Selenium will do the work.
 
 ### Ideas:
 <!-- This has to be spaced out -->
-* [ ] Instead of a link can we go for maybe a title and the user gets to choose?
+* [x] Instead of a link can we go for maybe a title and the user gets to choose?
 * [x] Hook the selenium program to a gui like Tkinter
 * [ ] Chrome or Firefox? Basically make the program more robust 
 * [x] Is there a way to close down the pop up tabs
 * [x] Move files to another destination? Can users choose?
  
+ 
+### How to use this project
+1. Download all the packages. Refer to this [documentation]('https://github.com/JustinDo720/ytMusicAutomation/doc/packages.md')
+2. Run the musicDownloadTk.py file 
+3. Choose which mode and follow the instructions.
