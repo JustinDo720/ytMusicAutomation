@@ -19,6 +19,6 @@ in their youtube link and Selenium will do the work.
  
  
 ### How to use this project
-1. Download all the packages. Refer to this [documentation]('https://github.com/JustinDo720/ytMusicAutomation/doc/packages.md')
-2. Run the musicDownloadTk.py file 
-3. Choose which mode and follow the instructions.
+1. Download all the packages. Refer to this [documentation]('https://github.com/JustinDo720/ytMusicAutomation/blob/master/docs/packages.md')
+1. Run the musicDownloadTk.py file 
+1. Choose which mode and follow the instructions.

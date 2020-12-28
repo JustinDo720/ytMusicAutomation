@@ -1,5 +1,10 @@
 # Packages:
 
+### Selenium:
+```python
+pip install selenium 
+```
+
 ### Requests, Html Parser, and BeautifulSoup :
 ```python
 pip install requests
@@ -17,5 +22,11 @@ pip install google-api-python-client
 pip install Pillow
 ```
 
+
+#### Note: Make sure to have geckodriver installed and replace the path in musicDownload.py 
+```python
+# Change path here in musicDownload.py
+geckodriver_path = os.environ.get('GECKODRIVER')
+```
 
 
