@@ -20,7 +20,8 @@ X Path buttons:
     restart
 """
 default_download_path = f'{os.getcwd()}\\music_downloaded\\'
-geckodriver_path = os.environ.get('GECKODRIVER')
+# MAKE SURE TO CHANGE GECKODRIVER_PATH TO YOUR OWN
+geckodriver_path = os.environ.get('GECKODRIVER') # GECKODRIVER PATH GOES HERE!
 yt_converter_url = 'https://ytmp3.cc/en13/'
 yt_converter_download_button = '/html/body/div[2]/div[1]/div[1]/div[3]/a[1]'
 yt_convert_next_button = '/html/body/div[2]/div[1]/div[1]/div[3]/a[3]'
